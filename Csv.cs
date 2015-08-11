@@ -20,19 +20,20 @@ namespace System.IO.Csv
         {
             string line = this.reader.ReadLine();
             if (line == null) return null;
-            return this.ParseLine(line);
+            string[] values = this.ParseLine(line);
+            if (this.Captions != null && this.Captions.Length != values.Length)
+                throw new ArgumentException("Captions and Values length must be equals");
+            return values;
         }
 
         public CsvReader(string fileName, string delimiter, bool hasCaptions)
         {
             this.Delimiter = delimiter;
             reader = File.OpenText(fileName);
-            if (hasCaptions)
-            {
-                string line = this.reader.ReadLine();
-                if (line == null) return;
-                this.Captions = this.ParseLine(line);
-            }
+            if (!hasCaptions) return;
+            string line = this.reader.ReadLine();
+            if (line == null) return;
+            this.Captions = this.ParseLine(line);
         }
 
         public void Dispose()
